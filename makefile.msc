@@ -1,0 +1,50 @@
+OBJS = agi.obj agi_v2.obj agi_v3.obj agi_v4.obj checks.obj cli.obj console.obj cycle.obj font.obj \
+	getopt.obj getopt1.obj global.obj graphics.obj hirespic.obj id.obj inv.obj keyboard.obj logic.obj \
+	lzw.obj main.obj menu.obj motion.obj objects.obj op_cmd.obj op_dbg.obj op_test.obj \
+	patches.obj picture.obj picview.obj rand.obj savegame.obj silent.obj sound.obj sprite.obj text.obj \
+	view.obj words.obj \
+	daudio.obj fileglob.obj path.obj nullvid.obj
+
+CC = cl
+MEM = /AL
+OPT = /O
+
+
+CPU = /G2
+INCLUDES = -Iinclude -I\msc51\INCLUDE
+CFLAGS = $(MEM) $(CPU) $(OPT) -D__MSDOS__  -DVERSION='"0.8.0-cvs"' $(INCLUDES)
+ZCFLAGS = $(MEM) $(CPU) /Od   -D__MSDOS__  -DVERSION='"0.8.0-cvs"' $(INCLUDES)
+
+#sprite.obj
+
+sar.exe: $(OBJS)
+	link @linkfile.txt
+	copy /Y sar.exe \dos\sq2
+	dosbox
+	del sar.exe
+
+menu.obj: menu.c
+	$(CC) /c $(ZCFLAGS) menu.c
+
+op_cmd.obj: op_cmd.c
+	$(CC) /c $(ZCFLAGS) op_cmd.c
+
+daudio.obj: msdos\dummy.c
+	$(CC) $(CFLAGS) /c /Fodaudio.obj msdos\dummy.c
+
+fileglob.obj: msdos\fileglob.c
+	$(CC) $(CFLAGS) /c msdos\fileglob.c
+
+path.obj: msdos\path.c
+	$(CC) $(CFLAGS) /c msdos\path.c
+
+tcglob.obj: msdos\tcglob.c
+	$(CC) $(CFLAGS) /c msdos\tcglob.c
+
+pcvga.obj: msdos\pcvga.c
+	$(CC) $(CFLAGS) /c msdos\pcvga.c
+
+
+clean:
+	del $(OBJS)
+	del sar.exe
