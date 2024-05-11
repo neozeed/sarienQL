@@ -260,20 +260,24 @@ unsigned char pixel;
 
 static void pc_put_pixels(int x, int y, int w, UINT8 *p)
 {
-	UINT8 *s;
-	int x1;
-	x1=0;
-	s=&screen_buffer[y * 320 + x];
-	for (;w>0;w--){
-		unsigned char pixel;
-		//pixel=(UINT8)&p;
+	unsigned shorta=ADDRESS4(SCREEN,x,y);
+	unsigned short d=a;
 
-		pixel = *p > 15 ? 0 : cga_map[*p];
+        UINT8s=&screen_buffer[y * 320 + x];
 
-		plot4(SCREEN,x+x1,y,pixel);
-		x1++;
-		p++;
-		}
+        for(;w>0;w--)
+        {
+                d=(d&masks4[x&7])|colours4[x&7][p > 15 ? 0 : cga_map[p]];
+
+                if((++x&7)==0)
+                {
+                        a++=d;
+                        d=a;
+                }
+
+                p++;
+        }
+        if(x&7) *a=d;
 //clock_ticks++;
 }
 
