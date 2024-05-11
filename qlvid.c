@@ -51,6 +51,20 @@ unsigned short peek(screen screen,unsigned int y,unsigned int x)
         }
 }
 
+
+const unsigned short masks4[]={0x7F7F,0xBFBF,0xDFDF,0xEFEF,0xF7F7,0xFBFB,0xFDFD,0xFEFE};
+
+const unsigned short colours4[8][4]={
+                                        {0,0x80,0x8000,0x8080},
+                                        {0,0x40,0x4000,0x4040},
+                                        {0,0x20,0x2000,0x2020},
+                                        {0,0x10,0x1000,0x1010},
+                                        {0,0x8,0x800,0x808},
+                                        {0,0x4,0x400,0x404},
+                                        {0,0x2,0x200,0x202},
+                                        {0,0x1,0x100,0x101}
+                                   };
+
 const unsigned short masks[]={0x3F3F,0xCFCF,0xF3F3,0xFCFC};
 
 const unsigned short colours[4][8]={
@@ -58,18 +72,6 @@ const unsigned short colours[4][8]={
 				{0,1<<4,2<<4,3<<4,512<<4,513<<4,514<<4,515<<4},
 				{0,1<<2,2<<2,3<<2,512<<2,513<<2,514<<2,515<<2},
 				{0,1,2,3,512,513,514,515}
-				};
-
-const unsigned short masks4[]={0x7F7F,0xBFBF,0xDFDF,0xEFEF,0xF7F7,0xFBFB,0xFDFD,0xFEFE};
-const unsigned short colours4[8][4]={
-				{0,0x80,0x8000,0x8080},
-				{0,0x40,0x4000,0x4040},
-				{0,0x20,0x2000,0x2020},
-				{0,0x10,0x1000,0x1010},
-				{0,0x8,0x800,0x808},
-				{0,0x4,0x400,0x404},
-				{0,0x2,0x200,0x202},
-				{0,0x1,0x100,0x101}
 				};
 
 const unsigned char shifts[]={6,4,2,0};
@@ -248,7 +250,8 @@ unsigned char pixel;
 	
    s=&screen_buffer;
    for(yy=0;xx<GFX_HEIGHT-1;yy++)   {
-      for(xx=0;xx<GFX_WIDTH-1;xx++)   {
+      for(xx=0;xx<GFX_WIDTH-1;xx++)
+	{
          pixel = *s > 15 ? 0 : cga_map[*s];
          plot4(SCREEN,xx,yy,pixel);
          s++;
@@ -260,24 +263,25 @@ unsigned char pixel;
 
 static void pc_put_pixels(int x, int y, int w, UINT8 *p)
 {
-	unsigned shorta=ADDRESS4(SCREEN,x,y);
-	unsigned short d=a;
+	unsigned short *a=ADDRESS4(SCREEN,x,y);
+	unsigned short d=*a;
 
-        UINT8s=&screen_buffer[y * 320 + x];
+	UINT8 *s=&screen_buffer[y * 320 + x];
 
-        for(;w>0;w--)
-        {
-                d=(d&masks4[x&7])|colours4[x&7][p > 15 ? 0 : cga_map[p]];
+	for(;w>0;w--)
+	{
+		d=(d&masks4[x&7])|colours4[x&7][*p > 15 ? 0 : cga_map[*p]];
+		
+		if((++x&7)==0)
+		{
+			*a++=d;
+			d=*a;
+		}
 
-                if((++x&7)==0)
-                {
-                        a++=d;
-                        d=a;
-                }
+		p++;
+	}
 
-                p++;
-        }
-        if(x&7) *a=d;
+	if(x&7) *a=d;
 //clock_ticks++;
 }
 
