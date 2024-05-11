@@ -153,7 +153,7 @@ int main (int argc, char *argv[])
 " (C) 1999-2003 Claudio Matsuoka, (C) 1999-2001 Igor Nesterov,\n"
 " (C) 2001,2002 Vasyl Tsvirkunov, (C) 2001,2002 Thomas Akesson\n"
 "QL-DOS 2-D code by Simon Greenaway\n" /* https://github.com/SimonGreenaway/QL-sprites */
-"QL-DOS timer code by mk79\n"	/* https://www.qlforum.co.uk/viewtopic.php?p=45918&sid=ab2363b94730ea40d1006626996fc886#p45918 */		
+"QL-DOS timer code by mk79 (Marcel Kilgus)\n"	/* https://www.qlforum.co.uk/viewtopic.php?p=45918&sid=ab2363b94730ea40d1006626996fc886#p45918 */		
 #ifdef SCALE2X
 "Scale2x Copyright (C) 2001-2002 Andrea Mazzoleni\n"
 #endif
