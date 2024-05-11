@@ -27,9 +27,9 @@ unsigned short bits[8];
 #define ADDRESS(screen,x,y) (((unsigned short *)screen)+y*64+x/4)
 #define ADDRESS4(screen,x,y) (((unsigned short *)screen)+y*64+x/8)
 
-void cls(screen screen)
+void cls()
 {
-        memset((unsigned char *)screen,0,32768);
+	memset(SCREEN,0,32768);
 }
 
 // Return the 16 bit pixel data for the 4 pixels containing this pixel
@@ -253,7 +253,7 @@ unsigned char pixel;
       for(xx=0;xx<GFX_WIDTH-1;xx++)
 	{
          pixel = *s > 15 ? 0 : cga_map[*s];
-         plot4(SCREEN,xx,yy,pixel);
+         plot4(SCREEN,xx+96,yy+28,pixel);
          s++;
       }
    }
@@ -263,10 +263,16 @@ unsigned char pixel;
 
 static void pc_put_pixels(int x, int y, int w, UINT8 *p)
 {
-	unsigned short *a=ADDRESS4(SCREEN,x,y);
-	unsigned short d=*a;
+	int yy,xx;
+	UINT8 *s;
+	unsigned short *a;
+	unsigned short d;
 
-	UINT8 *s=&screen_buffer[y * 320 + x];
+	yy=y+28;
+	xx=x+96;
+	a=ADDRESS4(SCREEN,xx,yy);
+	d=*a;
+	s=&screen_buffer[y * 320 + x];
 
 	for(;w>0;w--)
 	{

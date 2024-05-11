@@ -503,6 +503,7 @@ cmd(set_game_id) {
 		game.id[0] = 0;
 
 	report ("Game ID: \"%s\"\n", game.id);
+	cls();
 }
 
 cmd(pause) {
