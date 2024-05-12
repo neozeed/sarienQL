@@ -10,11 +10,11 @@ LIB1 = agi.o agi_v2.o agi_v3.o agi_v4.o checks.o cli.o console.o cycle.o font.o 
 	lzw.o menu.o motion.o objects.o op_cmd.o op_dbg.o op_test.o
 
 LIB2 = patches.o picture.o picview.o rand.o savegame.o silent.o sound.o sprite.o text.o \
-	view.o words.o daudio.o fileglob.o path.o qlvid.o poll.o
+	view.o words.o daudio.o fileglob.o path.o qlvid.o poll.o qlkeyboard.o
 
 CC = gcc
 MEM = 
-OPT = -Os
+OPT = -O0
 CFLAGS = $(MEM) $(OPT) -D__MSDOS__  -DVERSION="0.8.0-cvs" -Iinclude
 ZCFLAGS = $(MEM) -O1 -D__MSDOS__  -Iinclude
 

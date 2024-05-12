@@ -16,6 +16,10 @@
 #include <qdos.h>
 #include <sys/qlib.h>
 
+int ql_kbhit;
+unsigned char ql_charin;
+unsigned char ql_charold;
+
 /////////////////////////////////////////////////////////
 //	stolen from
 //	https://github.com/SimonGreenaway/QL-sprites
@@ -198,7 +202,6 @@ static UINT8 cga_map[16] = {
 static void pc_timer ()
 {
 	static UINT32 cticks = 0;
-//clock_ticks++;
 	while (cticks == clock_ticks);
 	cticks = clock_ticks;
 }
@@ -223,6 +226,12 @@ static int pc_init_vidmode ()
 
 	clock_count = 0;
 	clock_ticks = 0;
+
+
+	ql_kbhit=0;
+	ql_charin=0;
+	ql_charold=0;
+
 
 	init(4);
 	screen_buffer = calloc (GFX_WIDTH, GFX_HEIGHT);
@@ -257,7 +266,6 @@ unsigned char pixel;
          s++;
       }
    }
-//clock_ticks++;
 }
 
 
@@ -288,21 +296,28 @@ static void pc_put_pixels(int x, int y, int w, UINT8 *p)
 	}
 
 	if(x&7) *a=d;
-//clock_ticks++;
 }
 
 
 static int pc_keypress ()
 {
-//clock_ticks++;
+unsigned char key_read;
+key_read=scanKey();
+if( (key_read!=ql_charin) && (ql_kbhit==0) )   {
+   ql_charin=key_read;
+   ql_kbhit=1;
+   }
 }
 
 
 static int pc_get_key ()
 {
 	UINT16 key;
-//clock_ticks++;
 	key=0;
+	if(ql_kbhit)   {
+	   key=ql_charin;
+	   ql_kbhit=0;
+	}
 	return key;
 }
 

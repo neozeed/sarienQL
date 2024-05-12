@@ -113,4 +113,6 @@ clock_ticks++;
 	return key;
 }
 
+cls(){}
+
 	

@@ -3,7 +3,7 @@ OBJS = agi.obj agi_v2.obj agi_v3.obj agi_v4.obj checks.obj cli.obj console.obj c
 	lzw.obj main.obj menu.obj motion.obj objects.obj op_cmd.obj op_dbg.obj op_test.obj \
 	patches.obj picture.obj picview.obj rand.obj savegame.obj silent.obj sound.obj sprite.obj text.obj \
 	view.obj words.obj \
-	daudio.obj fileglob.obj path.obj nullvid.obj
+	daudio.obj fileglob.obj path.obj pcvga.obj
 
 CC = cl
 MEM = /AL

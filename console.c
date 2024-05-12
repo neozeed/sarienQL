@@ -613,7 +613,7 @@ void report (char *message, ...)
 #endif
 	va_end (args);
 
-        printf("%s\n", y);
+//      printf("%s\n", y);
 
 	if (console_input) {
 		strcpy (z, get_last_console_line ());

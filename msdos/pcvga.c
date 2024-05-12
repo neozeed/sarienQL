@@ -220,3 +220,5 @@ void interrupt far tick_increment(void)
 	_chain_intr(prev_08);
 }
 
+cls(){}
+
