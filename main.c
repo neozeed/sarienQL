@@ -11,6 +11,39 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef __QDOS__
+#include <qdos.h>
+#include <qptr.h>
+#include <fcntl.h>
+#include <ansicondef.h>
+
+/* not sure why this is undefined */
+void BEEP( unsigned short dur, unsigned char pitch)
+{
+    do_sound( dur, pitch, 0, 0, 0, 0, 0, 0);
+}
+
+/* C68 Specifics */
+char _prog_name[] = "Hack-1.03";
+int (*_cmdparams)()=NULL;
+long (*_cmdchannels)()=NULL;
+int (*_cmdwildcard)()=NULL;
+long (*_stackchannels)()=NULL;
+long _stack = 20L * 1024L;
+
+/* set up definition of CONsole Window */
+struct WINDOWDEF _condetails = {
+     2,    /* Border Color */
+     1,    /* Border Width */
+     0,    /* Paper        */
+     6,    /* Ink          */
+     512,  /* Width        */
+     256,  /* Height       */
+     0,    /* X origin     */
+     0     /* Y origin     */
+};
+#endif
+
 #ifdef HAVE_ALLEGRO
 #include <allegro.h>
 #endif
@@ -54,6 +87,12 @@ int main (int argc, char *argv[])
 
 #ifdef __MSDOS__
 	exec_name = strdup(argv[0]);
+#endif
+#ifdef __QDOS__
+
+ __ANSICONF__.emulation = VT100; 
+ __ANSICONF__.csi = 0; 
+ _conwrite = ANSI_conwrite;
 #endif
 
 	game.clock_enabled = FALSE;

@@ -3,24 +3,24 @@ OBJS = agi.o agi_v2.o agi_v3.o agi_v4.o checks.o cli.o console.o cycle.o font.o 
 	lzw.o main.o menu.o motion.o objects.o op_cmd.o op_dbg.o op_test.o \
 	patches.o picture.o picview.o rand.o savegame.o silent.o sound.o sprite.o text.o \
 	view.o words.o \
-	daudio.o fileglob.o path.o cga-none.o 
+	daudio.o fileglob.o path.o 
 
 LIB1 = agi.o agi_v2.o agi_v3.o agi_v4.o checks.o cli.o console.o cycle.o font.o \
 	getopt.o getopt1.o global.o graphics.o hirespic.o id.o inv.o keyboard.o logic.o \
 	lzw.o menu.o motion.o objects.o op_cmd.o op_dbg.o op_test.o
 
 LIB2 = patches.o picture.o picview.o rand.o savegame.o silent.o sound.o sprite.o text.o \
-	view.o words.o daudio.o fileglob.o path.o qlvid.o poll.o qlkeyboard.o
+	view.o words.o daudio.o fileglob.o path.o qlkeyboard.o qlvid.o poll.o
 
 CC = gcc
 MEM = 
-OPT = -O0
-CFLAGS = $(MEM) $(OPT) -D__MSDOS__  -DVERSION="0.8.0-cvs" -Iinclude
+OPT = -O
+CFLAGS = $(MEM) $(OPT) -D__MSDOS__  -DVERSION=0.8.0-cvs -Iinclude
 ZCFLAGS = $(MEM) -O1 -D__MSDOS__  -Iinclude
 
 
 sar: lib1.a lib2.a main.o 
-	ld -o sar main.o lib1.a lib2.a -lgcc -lc -lgcc
+	ld -o sar main.o lib1.a lib2.a -lgcc -lc -lgcc -lvt
 	@copy /Y sar \dos\qlay\sar
 	@del /f sar
 
