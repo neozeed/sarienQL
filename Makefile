@@ -12,36 +12,39 @@ LIB1 = agi.o agi_v2.o agi_v3.o agi_v4.o checks.o cli.o console.o cycle.o font.o 
 LIB2 = patches.o picture.o picview.o rand.o savegame.o silent.o sound.o sprite.o text.o \
 	view.o words.o daudio.o fileglob.o path.o qlkeyboard.o qlvid.o poll.o
 
-CC = gcc
+# CC = gcc
+CC = /usr/local/qdos/bin/xgcc
 MEM = 
 OPT = -O
 CFLAGS = $(MEM) $(OPT) -D__MSDOS__  -DVERSION=0.8.0-cvs -Iinclude
 ZCFLAGS = $(MEM) -O1 -D__MSDOS__  -Iinclude
+LD = /usr/local/qdos/bin/ld
 
 
 sar: lib1.a lib2.a main.o 
-	ld -o sar main.o lib1.a lib2.a -lgcc -lc -lgcc -lvt
-	@copy /Y sar \dos\qlay\sar
-	@del /f sar
+	$(LD) -o sar main.o lib1.a lib2.a -lgcc -lc -lgcc -lvt
+
+poll.o: poll.s
+	$(CC) -c poll.s -o poll.o
 
 lib1.a: $(LIB1)
-	@del lib1.a
+	rm -f lib1.a
 	slb -c lib1.a $(LIB1)
 
 lib2.a: $(LIB2)
-	@del lib2.a
+	rm -f lib2.a
 	slb -c lib2.a $(LIB2)
 
 clean:
-	del main.o $(LIB1) $(LIB2) lib1.a lib2.a sar
+	rm -f main.o $(LIB1) $(LIB2) lib1.a lib2.a sar
 
 
-daudio.o: msdos\dummy.c
-	$(CC) $(CFLAGS) -c -o daudio.o msdos\dummy.c
+daudio.o: msdos/dummy.c
+	$(CC) $(CFLAGS) -c -o daudio.o msdos/dummy.c
 
-fileglob.o: qdos\fileglob.c
-	$(CC) $(CFLAGS) -c qdos\fileglob.c
+fileglob.o: qdos/fileglob.c
+	$(CC) $(CFLAGS) -c qdos/fileglob.c
 
-path.o: qdos\path.c
-	$(CC) $(CFLAGS) -c qdos\path.c
+path.o: qdos/path.c
+	$(CC) $(CFLAGS) -c qdos/path.c
 
