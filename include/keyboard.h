@@ -28,15 +28,31 @@ extern "C"{
 #undef KEY_PGDN
 #undef KEY_HOME
 #undef KEY_END
-
 #define KEY_BACKSPACE	0x08
 #define	KEY_ESCAPE	0x1B
 #define KEY_ENTER	0x0D
+#ifdef __QDOS__
+#define KEY_UP		0xF8
+#define	KEY_DOWN	0xF9
+#define KEY_LEFT	0xFA
+#define KEY_STATIONARY	0xFB
+#define KEY_RIGHT	0xFC
+#define KEY_F1          0x01
+#define KEY_F2          0x02
+#define KEY_F3          0x03
+#define KEY_F4          0x04
+#define KEY_F5          0x05
+#define KEY_F6          0x06
+#define KEY_F7          0x07
+#define KEY_F8          0x08
+#define KEY_F9          0x09
+#else
 #define KEY_UP		0x4800
 #define	KEY_DOWN	0x5000
 #define KEY_LEFT	0x4B00
 #define KEY_STATIONARY	0x4C00
 #define KEY_RIGHT	0x4D00
+#endif
 
 #define KEY_DOWN_LEFT	0x4F00
 #define KEY_DOWN_RIGHT	0x5100
@@ -59,8 +75,9 @@ extern "C"{
 #define KEY_SCAN(k)	(k >> 8)
 #define KEY_ASCII(k)	(k & 0xff)
 
+#ifndef __QDOS__
 extern	UINT8		scancode_table[];
-
+#endif
 
 void	init_words	(void);
 void	clean_input	(void);
@@ -70,7 +87,8 @@ void	handle_keys	(int);
 void	handle_getstring(int);
 int	handle_controller(int);
 void	get_string	(int, int, int, int);
-UINT16	agi_get_keypress(void);
+//	is this even a thing?
+//UINT16	agi_get_keypress(void);
 int	wait_key	(void);
 int	wait_any_key	(void);
 
