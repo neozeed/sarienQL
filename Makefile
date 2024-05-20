@@ -19,6 +19,7 @@ OPT = -O
 CFLAGS = $(MEM) $(OPT) -D__MSDOS__  -DVERSION=0.8.0-cvs -Iinclude
 ZCFLAGS = $(MEM) -O1 -D__MSDOS__  -Iinclude
 LD = /usr/local/qdos/bin/ld
+DEL = rm -f
 
 
 sar: lib1.a lib2.a main.o 
@@ -28,15 +29,15 @@ poll.o: poll.s
 	$(CC) -c poll.s -o poll.o
 
 lib1.a: $(LIB1)
-	rm -f lib1.a
+	$(DEL) lib1.a
 	slb -c lib1.a $(LIB1)
 
 lib2.a: $(LIB2)
-	rm -f lib2.a
+	$(DEL) lib2.a
 	slb -c lib2.a $(LIB2)
 
 clean:
-	rm -f main.o $(LIB1) $(LIB2) lib1.a lib2.a sar
+	$(DEL) main.o $(LIB1) $(LIB2) lib1.a lib2.a sar
 
 
 daudio.o: msdos/dummy.c
