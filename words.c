@@ -14,6 +14,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "sarien.h"
 #include "agi.h"
 #include "keyboard.h"		/* for clean_input() */
@@ -37,15 +40,19 @@ static char *my_strndup (char* src, int n)
 int load_words (char *fname)
 {
 #ifndef PALMOS
-	FILE *fp = NULL;
+//	FILE *fp = NULL;
 	UINT32 flen;
 	UINT8 *mem = NULL;
 	char *path = NULL;
+
+	struct stat st;
+	int filep;
 
 	words = NULL;
 
 	path = fixpath (NO_GAMEDIR, fname);
 
+#if 0
 	if ((fp = fopen(path, "rb")) == NULL) {
 		report ("Warning: can't open %s\n", path);
 		return err_OK /*err_BadFileOpen*/;
@@ -56,14 +63,30 @@ int load_words (char *fname)
 	flen = ftell (fp);
 	fseek (fp, 0, SEEK_SET);
 	words_flen = flen;
+#else
+	stat(path,&st);
+	flen=st.st_size;
+	if(flen<=0)	{
+		return err_BadFileOpen;
+		}
+	report ("Loading dictionary: %s\n", path);
+	words_flen = flen;
+#endif
 
 	if ((mem = (UINT8*)calloc(1, flen + 32)) == NULL) {
-		fclose (fp);
+//		fclose (fp);
+		close (filep);
 		return err_NotEnoughMemory;
 	}
 
+#if 0
 	fread (mem, 1, flen, fp);
 	fclose (fp);
+#else
+	filep=open(path,O_BINARY| O_RDONLY);
+	read(filep,mem,flen);
+	close(filep);
+#endif
 
 	words = mem;
 

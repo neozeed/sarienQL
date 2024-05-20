@@ -12,6 +12,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "sarien.h"
 #include "agi.h"
 #include "lzw.h"
@@ -72,15 +75,18 @@ int agi_v3_detect_game (char *gn)
 }
 
 
-static int agi_v3_load_dir (struct agi_dir *agid, FILE *fp, UINT32 offs, UINT32 len)
+//static int agi_v3_load_dir (struct agi_dir *agid, FILE *fp, UINT32 offs, UINT32 len)
+static int agi_v3_load_dir (struct agi_dir *agid, int fp, UINT32 offs, UINT32 len)
 {
 	int ec = err_OK;
 	UINT8 *mem;
 	unsigned int i;
 
-	fseek (fp, offs, SEEK_SET);
+	//fseek (fp, offs, SEEK_SET);
+	lseek(fp, offs, SEEK_SET); 
 	if ((mem = malloc (len + 32)) != NULL) {
-		fread(mem, 1, len, fp);
+//		fread(mem, 1, len, fp);
+		read(fp,mem,len);
 
 		/* set all directory resources to gone */
 		for (i = 0; i < MAX_DIRS; i++) {
@@ -115,11 +121,15 @@ int agi_v3_init (void)
 	struct agi3vol agi_vol3[4];
 	int i;
 	UINT16 xd[4];
-	FILE *fp;
+//	FILE *fp;
 	char *path;
+
+	struct stat st;
+	int filep,flen;
 
 	path = fixpath (GAMEDIR, DIR_);
 
+#if 0
 	if ((fp = fopen(path, "rb")) == NULL) {
 		printf ("Failed to open \"%s\"\n", path);
 		return err_BadFileOpen;
@@ -127,6 +137,15 @@ int agi_v3_init (void)
 	/* build offset table for v3 directory format */
 	fread (&xd, 1, 8, fp);
 	fseek (fp, 0, SEEK_END);
+#else
+	stat(path,&st);
+	flen=st.st_size;
+	if(flen<=0)	{
+		return err_BadFileOpen;
+		}
+	read(filep,xd,8);
+	lseek(filep, 0, SEEK_END);
+#endif
 
 	for(i = 0; i < 4; i++)
 		agi_vol3[i].sddr = lohi_getword((UINT8 *)&xd[i]);
@@ -134,29 +153,31 @@ int agi_v3_init (void)
 	agi_vol3[0].len = agi_vol3[1].sddr - agi_vol3[0].sddr;
 	agi_vol3[1].len = agi_vol3[2].sddr - agi_vol3[1].sddr;
 	agi_vol3[2].len = agi_vol3[3].sddr - agi_vol3[2].sddr;
-	agi_vol3[3].len = ftell(fp) - agi_vol3[3].sddr;
+//	agi_vol3[3].len = ftell(fp) - agi_vol3[3].sddr;
+	agi_vol3[3].len = lseek(filep,0,SEEK_CUR) - agi_vol3[3].sddr;
 
 	if (agi_vol3[3].len > 256 * 3)
 		agi_vol3[3].len = 256 * 3;
 
-	fseek(fp, 0, SEEK_SET);
+//	fseek(fp, 0, SEEK_SET);
+	lseek(filep, 0, SEEK_END);
 
 	/* read in directory files */
-  	ec = agi_v3_load_dir (game.dir_logic, fp, agi_vol3[0].sddr,
+  	ec = agi_v3_load_dir (game.dir_logic, filep, agi_vol3[0].sddr,
 		agi_vol3[0].len);
 
   	if(ec == err_OK) {
-  		ec = agi_v3_load_dir (game.dir_pic, fp, agi_vol3[1].sddr,
+  		ec = agi_v3_load_dir (game.dir_pic, filep, agi_vol3[1].sddr,
 			agi_vol3[1].len);
 	}
 
   	if(ec == err_OK) {
-  		ec = agi_v3_load_dir (game.dir_view, fp, agi_vol3[2].sddr,
+  		ec = agi_v3_load_dir (game.dir_view, filep, agi_vol3[2].sddr,
 			agi_vol3[2].len);
 	}
 
   	if(ec == err_OK) {
-  		ec = agi_v3_load_dir (game.dir_sound, fp, agi_vol3[3].sddr,
+  		ec = agi_v3_load_dir (game.dir_sound, filep, agi_vol3[3].sddr,
 			agi_vol3[3].len);
 	}
 
@@ -213,15 +234,26 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 {
 	char x[MAX_PATH], *path;
 	UINT8 *data = NULL, *comp_buffer;
-	FILE *fp;
+//	FILE *fp;
+
+	struct stat st;
+	int filep,flen;
 
 	_D ("(%p)", agid);
 	sprintf (x, "vol.%i", agid->volume);
 	path = fixpath (GAMEDIR, x);
 
-	if (agid->offset != _EMPTY && (fp = fopen((char*)path, "rb")) != NULL) {
-		fseek (fp, agid->offset, SEEK_SET);
-		fread (&x, 1, 7, fp);
+	stat(path,&st);
+	flen=st.st_size;
+
+//	if (agid->offset != _EMPTY && (fp = fopen((char*)path, "rb")) != NULL) {
+	if (agid->offset != _EMPTY && (flen>0) ) {
+//		fseek (fp, agid->offset, SEEK_SET);
+//		fread (&x, 1, 7, fp);
+
+		filep = open (path, O_BINARY | O_RDONLY );
+		lseek (filep, agid->offset, SEEK_SET);
+		read(filep,x,7);
 
 		if (hilo_getword((UINT8 *)x) != 0x1234) {
 #if 0
@@ -239,7 +271,8 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 		agid->clen = lohi_getword((UINT8 *)x + 5);/* compressed len */
 
 		comp_buffer = calloc (1, agid->clen + 32);
-		fread (comp_buffer, 1, agid->clen, fp);
+//		fread (comp_buffer, 1, agid->clen, fp);
+		read(filep,comp_buffer,agid->clen);
 
 		if (x[2] & 0x80 || agid->len == agid->clen) {
 			/* do not decompress */
@@ -263,7 +296,8 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 			agid->flags |= RES_COMPRESSED;
 		}
 
-		fclose(fp);
+//		fclose(fp);
+		close(filep);
 	} else {
 		/* we have a bad volume resource */
 		/* set that resource to NA */

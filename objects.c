@@ -10,6 +10,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "sarien.h"
 #include "agi.h"
 
@@ -96,6 +99,9 @@ int load_objects (char *fname)
 	UINT8 *mem;
 	char *path;
 
+	struct stat st;
+	int filep;
+
 	objects=NULL;
 	game.num_objects = 0;
 
@@ -103,20 +109,35 @@ int load_objects (char *fname)
 	path = fixpath (NO_GAMEDIR, fname);
 	report ("Loading objects: %s\n", path);
 
+#if 0
 	if ((fp = fopen(path, "rb")) == NULL)
 		return err_BadFileOpen;
 
 	fseek (fp, 0, SEEK_END);
 	flen = ftell (fp);
 	fseek (fp, 0, SEEK_SET);
+#else
+	stat(path,&st);
+	flen=st.st_size;
+	if(flen<=0)	{
+		return err_BadFileOpen;
+		}
+#endif
 
 	if ((mem = calloc (1, flen + 32)) == NULL) {
-		fclose (fp);
+//		fclose (fp);
+		close (filep);
 		return err_NotEnoughMemory;
 	}
 
+#if 0
 	fread (mem, 1, flen, fp);
 	fclose(fp);
+#else
+	filep=open(path,O_BINARY| O_RDONLY);
+	read(filep,mem,flen);
+	close(filep);
+#endif
 
 	decode_objects(mem, flen);
 	free(mem);

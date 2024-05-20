@@ -12,6 +12,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "sarien.h"
 #include "agi.h"
 
@@ -60,15 +63,19 @@ static int agi_v2_detect_game (char *gn)
 
 static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 {
-	FILE *fp;
+//	FILE *fp;
 	UINT8 *mem;
 	UINT32 flen;
 	unsigned int i;
 	char *path;
 
+	struct stat st;
+	int filep;
+
 	path = fixpath (NO_GAMEDIR, fname);
 	report ("Loading directory: %s\n", path);
 
+#if 0
 	if ((fp = fopen (path, "rb")) == NULL) {
 		return err_BadFileOpen;
 	}
@@ -76,13 +83,24 @@ static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 	fseek (fp, 0, SEEK_END);
 	flen = ftell (fp);
 	fseek (fp, 0, SEEK_SET);
+#else
+	stat(path,&st);
+	flen=st.st_size;
+	if(flen<=0)	{
+		return err_BadFileOpen;
+		}	
+#endif
 
 	if ((mem = malloc (flen + 32)) == NULL) {
-		fclose (fp);
+//		fclose (fp);
+		close(filep);
 		return err_NotEnoughMemory;
 	}
 
-	fread (mem, 1, flen, fp);
+//	fread (mem, 1, flen, fp);
+	filep=open(path,O_BINARY| O_RDONLY);
+	read(filep,mem,flen);
+	close(filep);
 
 	/* set all directory resources to gone */
 	for (i = 0; i < MAX_DIRS; i++) {
@@ -99,7 +117,7 @@ static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 	}
 
 	free (mem);
-	fclose (fp);
+//	fclose (fp);
 
 	return err_OK;
 }
@@ -170,25 +188,39 @@ static UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 {
 	UINT8 *data = NULL;
 	char x[MAX_PATH], *path;
-	FILE *fp;
+//	FILE *fp;
 	unsigned int sig;
+
+	struct stat st;
+	int filep,flen;
 
 	sprintf (x, "vol.%i", agid->volume);
 	path = fixpath (NO_GAMEDIR, x);
 	_D ("path = %s", path);
 
-	if (agid->offset != _EMPTY && (fp = fopen (path, "rb")) != NULL) {
+	stat(path,&st);
+	flen=st.st_size;
+
+//	if (agid->offset != _EMPTY && (fp = fopen (path, "rb")) != NULL) {
+	if (agid->offset != _EMPTY && (flen>0) ) {
 		_D ("loading resource at offset %d", agid->offset);
+#if 0
 		if (fseek (fp, agid->offset, SEEK_SET) < 0) {
 			agid->offset = _EMPTY;
 			return NULL;
 		}
 		fread (&x, 1, 5, fp);
+#else
+		filep=open(path,O_BINARY| O_RDONLY);
+		lseek(filep,agid->offset,SEEK_SET);
+		read(filep,x,5);
+#endif
 		if ((sig = hilo_getword ((UINT8*)x)) == 0x1234) {
 			agid->len = lohi_getword ((UINT8*)x + 3);
 			data = calloc (1, agid->len + 32);
 			if (data != NULL) {
-				fread (data, 1, agid->len, fp);
+//				fread (data, 1, agid->len, fp);
+				read(filep,data,agid->len);
 			} else {
 				abort ();
 			}
@@ -203,7 +235,8 @@ static UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 			/* fprintf (stderr, "ACK! BAD RESOURCE!!!\n"); */
 			return 0;
 		}
-		fclose (fp);
+//		fclose (fp);
+		close(filep);
 	} else {
 		/* we have a bad volume resource */
 		/* set that resource to NA */
