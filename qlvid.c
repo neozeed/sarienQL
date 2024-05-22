@@ -250,10 +250,12 @@ static int pc_deinit_vidmode ()
 /* blit a block onto the screen */
 static void pc_put_block (int x1, int y1, int x2, int y2)
 {
+/* tuns out it does nothing useful per Simon */
+#if 0
 UINT8 *s;
 int xx,yy;
 unsigned char pixel;
-	
+
    s=&screen_buffer;
    for(yy=0;xx<GFX_HEIGHT-1;yy++)   {
       for(xx=0;xx<GFX_WIDTH-1;xx++)
@@ -263,6 +265,7 @@ unsigned char pixel;
          s++;
       }
    }
+#endif
 }
 
 
