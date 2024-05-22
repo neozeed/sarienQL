@@ -156,6 +156,9 @@ void update_timer ()
 
 	clock_count -= TICK_SECONDS;
 
+	if (getflag (F_sound_on))
+		play_sound();
+
 	if (!game.clock_enabled)
 		return;
 

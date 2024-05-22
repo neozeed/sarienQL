@@ -410,8 +410,16 @@ static void stop_note (int i)
 }
 
 
+#include <qdos.h>
 static void play_note (int i, int freq, int len, int vol)
 {
+if(i==0){
+   if (getflag (F_sound_on))
+      do_sound(490,176,0,0,0,0,8,0);
+        printf("\033[%d;%dH", 24, 0);
+	printf("\t\t\t\t\rbeep: chan_%d len_%d freq_%d",i,len/100,freq/7);
+   }
+return;
 	if (!getflag (F_sound_on))
 		vol = 0;
 	else if (vol && opt.soundemu == SOUND_EMU_PC)
@@ -548,7 +556,8 @@ void play_agi_sound ()
 {
 	int i, freq;
 
-	for (playing = i = 0; i < (opt.soundemu == SOUND_EMU_PC ? 1 : 4); i++) {
+//	for (playing = i = 0; i < (opt.soundemu == SOUND_EMU_PC ? 1 : 4); i++) {
+	for (playing = i = 0; i < 4; i++) {
 		playing |= !chn[i].end;
 
 		if (chn[i].end)

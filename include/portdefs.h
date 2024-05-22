@@ -14,7 +14,7 @@
 #  undef USE_PCM_SOUND
 #  undef USE_MOUSE
 #  define  PCCGA
-#  define  USE_CONSOLE
+#  undef USE_CONSOLE
 #  undef USE_HIRES
 # define USE_COMMAND_LINE
 #  undef AGDS_SUPPORT
