@@ -19,18 +19,21 @@
 #include "sarien.h"
 #include "agi.h"
 
+extern char *drive;
+
 
 int file_isthere (char *fname)
 {
 struct stat st;
-int filep,flen;
+int filep,flen,rc;
 
-   stat(fname,&st);
-   flen=st.st_size;
-if(flen>0)   {
-   return 1;
+//
+   _D(_D_WARN "file_isthere is checking %s\n",fname);
+   rc=stat(fname,&st);
+   printf("stat rc'd me a %d\n",rc);
+   if(rc==0)   {
+      return 1;
    }
-else 
    return 0;
 }
 
@@ -51,7 +54,7 @@ char *fixpath (int flag, char *fname)
 
 _D("fileglob.c fixpath %s",fname);
 
-sprintf(path,"WIN3_%s",fname);
+sprintf(path,"%s%s",drive,fname);
 
 	if (flag==1) {
 		_D("flag was set adding %s\n",game.name);

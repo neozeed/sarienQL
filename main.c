@@ -14,9 +14,9 @@
 #ifdef __QDOS__
 #include <qdos.h>
 #include <qptr.h>
+#include <sms.h>
 #include <fcntl.h>
 #include <ansicondef.h>
-
 /* not sure why this is undefined */
 void BEEP( unsigned short dur, unsigned char pitch)
 {
@@ -24,7 +24,7 @@ void BEEP( unsigned short dur, unsigned char pitch)
 }
 
 /* C68 Specifics */
-char _prog_name[] = "Hack-1.03";
+char _prog_name[] = "Sarien 0.8";
 int (*_cmdparams)()=NULL;
 long (*_cmdchannels)()=NULL;
 int (*_cmdwildcard)()=NULL;
@@ -42,6 +42,13 @@ struct WINDOWDEF _condetails = {
      0,    /* X origin     */
      0     /* Y origin     */
 };
+
+// From SimonGreenaway's invaders
+char *drive="WIN1_"; // Used to tell code from where to load image libs and screens.
+char *rom;	// For future development (dual screen).
+float qdos=-1;	//    "
+int job=-1;	//    "
+int convert=-1; //    "
 #endif
 
 #ifdef HAVE_ALLEGRO
@@ -89,10 +96,51 @@ int main (int argc, char *argv[])
 	exec_name = strdup(argv[0]);
 #endif
 #ifdef __QDOS__
-
+void *sv;
+long ver;
+int s;
+char fbuf[20];
+char tbuf[20];
  __ANSICONF__.emulation = VT100; 
  __ANSICONF__.csi = 0; 
  _conwrite = ANSI_conwrite;
+	#if 0
+sms_info(&sv,&ver);
+setSysBase(sv);
+	for(s=1;s<argc;s++)
+	{
+		if(strcmp(argv[s],"-c")==0) convert=1;
+		else if(strcmp(argv[s],"-d")==0) drive=argv[++s];
+		else if(strcmp(argv[s],"-rom")==0) rom=argv[++s];
+		else if(strcmp(argv[s],"-qdos")==0) qdos=atof(argv[++s]);
+		else if(strcmp(argv[s],"-job")==0) job=atoi(argv[++s]);
+		else
+		{
+			printf("Unknown command line argument: %s\n",argv[s]);
+			exit(4);	
+		}
+	}
+	#endif
+
+/*this is terrible. sorry.*/
+   s=-1;
+   while(s!=1)   {
+   cls();
+   printf("compiled drive was [%s]\n",drive);
+   printf("enter drive!\n");
+   gets(fbuf);
+   if(strlen(fbuf)>0)
+      drive=fbuf;
+   printf("\n\n");
+   printf("main.c: drive is \n[%s]\n",drive);
+   sprintf(tbuf,"%s%s",drive,"AGI");
+   s=file_isthere(tbuf);
+   if(s!=1) {
+      printf("\nfile %s not found!\npress Enter to try again\n\n>",tbuf);
+      getch();
+      printf("\033[2J\033[1;1H");
+      }
+   }
 #endif
 
 	game.clock_enabled = FALSE;

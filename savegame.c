@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <string.h>
+extern char *drive;
 
 #if !defined(DREAMCAST) && !defined(CIBYL) && !defined(__MPW__) && !defined(PALMOS)
 #  ifndef __DICE__
@@ -605,7 +606,7 @@ static int select_slot (char *path)
 		FILE *f;
 		char sig[8];
 		//sprintf (name, "%s/%08d.sav", path, i);
-		sprintf (name, "WIN3_%08d.sav", i);
+		sprintf (name, "%s%08d_sav",drive, i);
                 //printf("Opening %s\n", name);
 		f = fopen (name, "rb");
 		if (f == NULL) {
@@ -673,7 +674,7 @@ getout:
 int savegame_simple ()
 {
 	char home[MAX_PATH], path[MAX_PATH];
-	sprintf(path,"WIN3_%08d.sav",game.id);
+	sprintf(path,"%s%08d_sav",drive,game.id);
 	save_game (path, "save");
 
 	return err_OK;
@@ -750,7 +751,7 @@ int savegame_dialog ()
 
 //	sprintf (path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
 //		home, game.crc, game.id, slot);
-	sprintf (path, "WIN3_%08d.sav", slot);
+	sprintf (path, "%s%08d_sav",drive, slot);
 	_D (_D_WARN "file is [%s]", path);
 	
 	save_game (path, desc);
@@ -775,9 +776,9 @@ int loadgame_simple ()
 
 //	sprintf(path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
 //		home, game.crc, game.id, 0);
-	sprintf(path,"%08d.sav",game.id);
+	sprintf(path,"%08d_sav",game.id);
 #endif
-	sprintf (path,"WIN3_00000756.SAV");
+	sprintf (path,"%s00000756_sav",drive);
 	sprintf (buffer,"trying to load %s",path);
 	message_box (buffer);
 
@@ -837,7 +838,7 @@ int loadgame_dialog ()
 
 //	sprintf(path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
 //		home, game.crc, game.id, slot);
-	sprintf (path, "WIN3_%08d.sav", slot);
+	sprintf (path, "%s%08d_sav",drive, slot);
 
 	if ((rc = load_game (path)) == err_OK) {
 		message_box ("Game restored.");
