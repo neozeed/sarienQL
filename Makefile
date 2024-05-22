@@ -15,7 +15,7 @@ LIB2 = patches.o picture.o picview.o rand.o savegame.o silent.o sound.o sprite.o
 # CC = gcc
 CC = /usr/local/qdos/bin/xgcc
 MEM = 
-OPT = -O
+OPT = -O3
 CFLAGS = $(MEM) $(OPT) -D__MSDOS__  -DVERSION=0.8.0-cvs -Iinclude
 ZCFLAGS = $(MEM) -O1 -D__MSDOS__  -Iinclude
 LD = /usr/local/qdos/bin/ld
