@@ -11,6 +11,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 /*#include <dos.h>*/
 
 #include "sarien.h"
@@ -19,58 +22,25 @@
 
 int file_isthere (char *fname)
 {
-FILE *f;
-_D("fileglob.c: file_isthere %s\n",fname);
-f=fopen(fname,"rb");
-if(f>0)
-	return 1;
-else return 0;
+struct stat st;
+int filep,flen;
+
+   stat(fname,&st);
+   flen=st.st_size;
+if(flen>0)   {
+   return 1;
+   }
+else 
+   return 0;
 }
 
 
 
 char* file_name (char *fname)
 {
-char filename[25];
-//	return ("fileglob.c: file_name fail none");
-sprintf(filename,"%s",fname);
-return(filename);
+return strdup(fname);
 }
 
-
-
-char *xfixpath (int flag, char *fname)
-{
-	static char path[MAX_PATH];
-	char *p;
-
-_D("fileglob.c fixpath %s",fname);
-
-    	strcpy (path, game.dir);
-
-	if (*path && (path[strlen(path)-1]!='\\' && path[strlen(path)-1] != '/'))
-	{
-		if(path[strlen(path)-1]==':')
-			strcat(path, "./");
-		else
-			strcat(path, "/");
-	}
-
-	if (flag==1)
-		strcat (path, game.name);
-
-	strcat (path, fname);
-
-	p = path;
-
-	while(*p) {
-		if (*p=='\\')
-		    *p='/';
-		p++;
-	}
-_D("\t%s\n",path);
-	return path;
-}
 
 
 char *fixpath (int flag, char *fname)
@@ -97,6 +67,4 @@ for (j=0;j<strlen(path);j++)
 
 _D("\t%s\n",path);
 	return path;
-
-
 }

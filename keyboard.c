@@ -148,7 +148,11 @@ int handle_controller (int key)
 	if (game.player_control) {
 		int d = 0;
 
+#ifdef __QDOS__
+		if (key>=0xf0) {
+#else
 		if (!KEY_ASCII (key)) {
+#endif
 			switch (key) {
 			case KEY_UP:         d = 1; break;
 			case KEY_DOWN:       d = 5; break;

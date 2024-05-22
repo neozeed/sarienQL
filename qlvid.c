@@ -18,7 +18,6 @@
 
 int ql_kbhit;
 unsigned char ql_charin;
-unsigned char ql_charold;
 
 /////////////////////////////////////////////////////////
 //	stolen from
@@ -230,8 +229,6 @@ static int pc_init_vidmode ()
 
 	ql_kbhit=0;
 	ql_charin=0;
-	ql_charold=0;
-
 
 	init(4);
 	screen_buffer = calloc (GFX_WIDTH, GFX_HEIGHT);

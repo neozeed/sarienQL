@@ -19,7 +19,8 @@ extern "C" {
 
 #define CONSOLE_LINES_BUFFER    80
 #define CONSOLE_LINE_SIZE	(GFX_WIDTH / 8)
-#define	CONSOLE_ACTIVATE_KEY	'`'
+//#define	CONSOLE_ACTIVATE_KEY	'`'
+#define	CONSOLE_ACTIVATE_KEY	'-'
 #define CONSOLE_SWITCH_KEY	'~'
 
 struct sarien_console {
