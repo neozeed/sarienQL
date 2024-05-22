@@ -131,7 +131,7 @@ int handle_controller (int key)
 		if (game.ev_keyp[i].data == key) {
 			_D ("event %d: key press", i);
 			game.ev_keyp[i].occured = TRUE;
-			report ("event AC:%i occured\n", i);
+//			report ("event AC:%i occured\n", i);
 			return TRUE;
 		}
 	}
@@ -149,7 +149,7 @@ int handle_controller (int key)
 		int d = 0;
 
 #ifdef __QDOS__
-		if (key>=0xf0) {
+		if ((key>=0xf0)||(key<10)) {
 #else
 		if (!KEY_ASCII (key)) {
 #endif

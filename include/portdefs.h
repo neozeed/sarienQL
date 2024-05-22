@@ -49,7 +49,7 @@ static char g_vmu_port[2];
 #  include <stdlib.h>
 #  include <assert.h>
    typedef signed int Err;
-//#define _TRACE
+
 
 #ifdef FAKE_PALMOS
 #  undef USE_CONSOLE

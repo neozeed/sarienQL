@@ -1,3 +1,4 @@
+
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
@@ -30,7 +31,7 @@ void __init_sound ()
 static int dummy2_init_sound (SINT16 *buffer)
 {
 	report ("sound_dummy: sound output disabled\n");
-	opt.soundemu = SOUND_EMU_PC;
+//	opt.soundemu = SOUND_EMU_PC;
 	return 0;
 }
 

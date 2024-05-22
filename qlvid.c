@@ -154,7 +154,7 @@ static int	pc_deinit_vidmode	(void);
 static void	pc_put_block		(int, int, int, int);
 static void	pc_put_pixels		(int, int, int, UINT8 *);
 static void	pc_timer		(void);
-static int	pc_get_key		(void);
+int	pc_get_key		(void);
 static int	pc_keypress		(void);
 
 
@@ -310,7 +310,7 @@ if( (key_read!=ql_charin) && (ql_kbhit==0) )   {
 }
 
 
-static int pc_get_key ()
+int pc_get_key ()
 {
 	UINT16 key;
 	key=0;

@@ -17,11 +17,10 @@
 #include <sms.h>
 #include <fcntl.h>
 #include <ansicondef.h>
-/* not sure why this is undefined */
-void BEEP( unsigned short dur, unsigned char pitch)
-{
-    do_sound( dur, pitch, 0, 0, 0, 0, 0, 0);
-}
+extern int ql_kbhit;
+extern int ql_charin;
+int pc_get_key(void);
+
 
 /* C68 Specifics */
 char _prog_name[] = "Sarien 0.8";
@@ -141,6 +140,11 @@ setSysBase(sv);
       printf("\033[2J\033[1;1H");
       }
    }
+while(ql_kbhit){
+     pc_get_key();
+}
+sleep(1);
+ql_kbhit=0;
 #endif
 
 	game.clock_enabled = FALSE;
